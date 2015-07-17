@@ -1,0 +1,91 @@
+/*Foundation Overides*/
+
+.column,
+.columns {
+    min-height: 1px;
+}
+
+/*Main Styles*/
+
+body {
+    background-image: url('../img/texture-green-felt-3.jpg');
+    color: rgba(240, 240, 240, 1);
+    min-width: 320px;
+}
+h1 {
+    color: rgba(240, 240, 240, 1);
+}
+#main-header {
+    text-align: center;
+    padding: 15px;
+}
+#main-header img{
+    max-height: 150px;
+}
+#play-section {
+    background: rgba(0, 0, 0, .25);
+    text-align: center;
+    max-width: 1000px;
+    margin: auto;
+    margin-bottom:15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    border-right: 1px solid rgba(255,255,255,.15);
+}
+#player-area {
+    background: rgba(0, 0, 0, .25);
+    text-align: center;
+    margin: 15px auto 15px auto;
+    border-radius: 4px;
+    padding: 15px;
+    -webkit-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    border-right: 1px solid rgba(255,255,255,.15);
+}
+#dealer-area {
+    background: rgba(0, 0, 0, .25);
+    text-align: center;
+    margin: 15px auto 15px auto;
+    border-radius: 4px;
+    padding: 15px;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    border-right: 1px solid rgba(255,255,255,.15);
+}
+#bet-section {
+    background: rgba(0, 0, 0, .25);
+    max-width: 1000px;
+    margin: auto;
+    margin-bottom:15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    box-shadow: inset 10px 10px 50px -15px rgba(0,0,0,0.75);
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    border-right: 1px solid rgba(255,255,255,.15);
+}
+#bet-selector{
+    text-align: center;
+    text-align:left;
+}
+#bankroll-display{
+    text-align: right;
+}
+
+#main-footer {
+    background: rgba(0, 0, 0, .50);
+    position:fixed;
+    bottom:0;
+}
