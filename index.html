@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="img/favicon.png" type="image/png">
-
     <title>BlackJack</title>
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/foundation.css" />
@@ -48,18 +47,18 @@
     </header>
     <section id="play-section">
         <div id="dealer-row" class="row">
-            <p>Dealer</p>
+            <h2>Dealer</h2>
             <div id="dealer-area" class="small-12 small-centered medium-8 columns">
 
             </div>
         </div>
         <div id="common-row" class="row">
-            <div id="common-area" class="small-12 medium-12 large-12 columns">
-                <p>Common</p>
+            <div id="common-area" class="small-12 small-centered medium-6 columns">
+                <h3>Info</h3>
             </div>
         </div>
         <div id="player-row" class="row">
-            <p>Player</p>
+            <h2>Player</h2>
             <div id="player-area" class="small-12 small-centered medium-8 columns">
 
             </div>
@@ -67,33 +66,39 @@
     </section>
     <section id="bet-section">
         <div id="bet-row" class="row">
-            <div id="bet-selector" class="small-12 medium-6 columns">
-                <div class="row">
-                    <ul class="inline-list">
-                        <li>1</li>
-                        <li>5</li>
-                        <li>10</li>
-                        <li>25</li>
-                        <li>100</li>
-                    </ul>
-                </div>
-            </div>
-            <div id="bankroll-display" class="small-12 medium-6 columns">
-                <p>Stacked Chips</p>
-            </div>
-            <div id="action-buttons" class="small-12 medium-7 medium-centered columns">
-                <ul class="stack-for-small button-group radius">
-                    <li><a href="#" class="button success">Hit</a></li>
-                    <li><a href="#" class="button secondary">Stay</a></li>
-                    <li><a href="#" class="button alert">Split</a></li>
-                    <li><a href="#" class="button warning">Double Down</a></li>
-                    <!--
-                    CREATE JAVASCRIPT TO APPLY REMOVE STACK-FOR-SMALL 
-                    AND ADD EVEN-4 ON TRANSITION FROM SMALL TO MEDIUM
--->
+            <div id="bet-selector" class="small-12 medium-4 columns text-center">
+               <h3>Select Your Bet</h3>              
+                <ul class="inline-list even-5">
+                    <li id="bet-1" class="bet" value="1"><img src="img/chips/chip-01.png" /></li>
+                    <li id="bet-5" class="bet" value="5"><img src="img/chips/chip-05.png" /></li>
+                    <li id="bet-10" class="bet" value="10"><img src="img/chips/chip-10.png" /></li>
+                    <li id="bet-25" class="bet" value="25"><img src="img/chips/chip-25.png" /></li>
+                    <li id="bet-100" class="bet" value="100"><img src="img/chips/chip-100.png" /></li>
                 </ul>
             </div>
-
+            <div id="current-bet" class="small-12 medium-4 columns text-center">
+                <h3>Current Bet</h3>
+                <p></p>
+            </div>
+            <div id="bankroll-display" class="small-12 medium-4 columns text-center">
+                <h3>Bankroll</h3>
+                <p></p>
+            </div>
+        </div>
+        <div id="action-row" class="row">
+            <div id="action-buttons" class="small-12 medium-7 medium-centered columns">
+                <ul id="dealer-actions" class="stack-for-small button-group even-5 radius">
+                    <li><button id="deal" class="button" value="deal">Deal</button></li>
+                    <li><button id="hit" class="button success" value="hit">Hit</button></li>
+                    <li><button id="stay" class="button secondary" value="stay">Stay</button></li>
+                    <li><button id="split" class="button alert" value="split">Split</button></li>
+                    <li><button id="double-down" class="button warning" value="double-down">2x</button></li>
+                    <!--
+                        CREATE JAVASCRIPT TO APPLY REMOVE STACK-FOR-SMALL 
+                        AND ADD EVEN-4 ON TRANSITION FROM SMALL TO MEDIUM
+                    -->
+                </ul>
+            </div>
         </div>
     </section>
     <footer id="main-footer">
@@ -110,7 +115,6 @@
     <script src="js/helper.js"></script>
     <script>
         $(document).foundation();
-
     </script>
 </body>
 
