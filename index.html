@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div id="start-modal" class="reveal-modal text-center" data-reveal aria-labelledby="firstModalTitle" aria-hidden="true" role="dialog">
+    <div id="start-modal" class="reveal-modal text-center leveltwo" data-reveal aria-labelledby="firstModalTitle" aria-hidden="true" role="dialog">
         <div class="row">
             <div class="small-12 columns">
                 <img src="img/logo.png" alt="Blackjack" />
@@ -23,7 +23,8 @@
         <div class="row">
             <div class="small-12 medium-6 medium-centered columns">
                 <form>
-                    <label>Please select the number of decks you wish to play with.
+                    <label>
+                       <p>Select the number of decks</p>
                         <select id="number-of-decks" name="number-of-decks">
                             <option value="1">1 Deck (52 Cards)</option>
                             <option value="2">2 Decks (104 Cards)</option>
@@ -46,26 +47,25 @@
         </div>
     </header>
     <section id="play-section">
-        <div id="dealer-row" class="row">
-            <h2>Dealer</h2>
-            <div id="dealer-area" class="small-12 small-centered medium-8 columns">
-
+        <div id="dealer-row" class="row leveltwo">
+            <div id="dealer-area" class="small-12 small-centered columns ">
+                <h2>Dealer</h2>
             </div>
         </div>
         <div id="common-row" class="row">
-            <div id="common-area" class="small-12 small-centered medium-6 columns">
-                <h3>Info</h3>
+            <div id="common-area" class="small-12 small-centered medium-10 columns leveltwo">
+                <h2>Info</h2>
+                <h3></h3>
             </div>
         </div>
-        <div id="player-row" class="row">
-            <h2>Player</h2>
-            <div id="player-area" class="small-12 small-centered medium-8 columns">
-
+        <div id="player-row" class="row leveltwo">
+            <div id="player-area" class="small-12 small-centered columns ">
+                <h2>Player</h2>
             </div>
         </div>
     </section>
     <section id="bet-section">
-        <div id="bet-row" class="row">
+        <div id="bet-row" class="row leveltwo">
             <div id="bet-selector" class="small-12 medium-4 columns text-center">
                <h3>Select Your Bet</h3>              
                 <ul class="inline-list even-5">
@@ -104,14 +104,13 @@
     <footer id="main-footer">
         <div class="row">
             <div class="small-12 columns">
-                A Spencer Denauski Joint.
+                <p>Derp.</p>
             </div>
         </div>
     </footer>
 
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
-    <!--    <script src="js/script.js"></script>-->
     <script src="js/helper.js"></script>
     <script>
         $(document).foundation();

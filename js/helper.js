@@ -1,17 +1,3 @@
-//    var $dealerImg = $("<img>");
-//    $dealerImg.attr("src", cards[93].image);
-//    $dealerImg.attr("style", "max-height: 200px;");
-//    $('#dealer-area').append($dealerImg);
-//
-//    var $playerImg = $("<img>");
-//    $playerImg.attr("src", cards[25].image);
-//    $playerImg.attr("style", "max-height: 200px;");
-//    $('#player-area').append($playerImg);
-
-//placebets
-//initaldealcards
-//roundfinished
-
 $(document).ready(function () {
     startModal();
 });
@@ -20,13 +6,17 @@ var bankroll = 1000,
     totalBet = 0,
     winnings = 0,
     dealRoundCounter = 0,
-    dealTimeDelay = 10000,
+    dealTimeDelay = 50000,
     $currentBet = $("#current-bet p"),
     $bankrollDisplay = $("#bankroll-display p"),
     $commonDisplay = $("#common-area h3"),
+    faceDownUrl = "img/cards/fd03.png",
     discardPile = [],
     player = [],
-    dealer = [];
+    playerTotal = 0,
+    dealer = [],
+    dealerTotal = 0;
+
 
 function setStatus(currentStatus) {
     console.log(currentStatus);
@@ -38,116 +28,186 @@ function setStatus(currentStatus) {
             break;
         case "roundStart":
             $("#dealer-actions #deal").removeClass("disabled");
+            $("#dealer-actions #deal").addClass("active");
+
             $("#dealer-actions #deal").on("click", function () {
-                dealRoundCounter = 1;
                 $("#dealer-actions li button").addClass("disabled");
-                //stackAddCard(stackDeal());
+                $("#dealer-actions #deal").removeClass("active");
                 $("#dealer-actions #deal").off("click");
                 $(".bet").off("click");
                 setStatus("dealCards");
             });
             break;
+
         case "dealCards":
-            dealRound()
+
+            //Clears Player & Dealer Array
+            if (player.length > 0 && dealer.length > 0) {
+                player = [];
+                dealer = [];
+            }
+
+            //Initiates dealRound Switch
+            dealRoundCounter = 1;
+            dealRound();
+
+            //Displays Current Score
+            if (playerTotal === 21) {
+                $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You have blackjack!");
+            } else if (playerTotal < 16) {
+                $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You should hit!");
+                $("#dealer-actions #hit").addClass("active");
+                $("#dealer-actions #stay").addClass("active");
+            } else if (playerTotal > 17) {
+                $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You should stay!");
+                $("#dealer-actions #hit").addClass("active");
+                $("#dealer-actions #stay").addClass("active");
+            }
+
+            //Makes Hit & Stay Buttons Active
+            $("#dealer-actions #hit").removeClass("disabled");
+            $("#dealer-actions #stay").removeClass("disabled");
+
+            //Sets variable with current length of Player/Dealer Array
+            var pCardCount = player.length - 1;
+            var dCardCount = dealer.length - 1;
+
+            //Adds Click Event To #hit
+            $("#dealer-actions #hit").on("click", function () {
+                pCardCount++;
+                stackAddCard(stackDeal(), player);
+                console.log("Player Card " + pCardCount + ": " + player[pCardCount].toString());
+                var pCardHit = $('<div id="p-card-' + pCardCount + '" class="card">');
+                pCardHit.css('background-image', 'url(' + '"' + player[pCardCount].image + '"' + ')');
+                pCardHit.appendTo('#player-area');
+                playerTotal += player[pCardCount].value;
+                $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal);
+
+                //Check if playerTotal is over 21.  If it is search for aces by their value.
+                if (playerTotal > 21) {
+                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> YOU BUSTED!");
+                    console.log("You're over 21!  Searching for Aces!");
+                    for (var i = 0; i < player.length; i++) {
+                        if (player[i].value === 11) {
+                            console.log("Converting Aces!");
+                            player[i].value = 1;
+                            playerTotal -= 10;
+                            $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> CONVERTED ACES!");
+                        } 
+                    }
+                }
+
+                //                if (playerTotal > 21 && dealerTotal > 21) {
+                //                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> ROUND IS A TIE.");
+                //                } else if (playerTotal > 21) {
+                //                    $("#dealer-actions #hit").addClass("disabled");
+                //                    $("#dealer-actions #stay").addClass("disabled");
+                //                    $("#dealer-actions #hit").off("click");
+                //                    $("#dealer-actions #stay").off("click");
+                //                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> YOU BUSTED!");
+                //                    totalBet -= totalBet;
+                //                    bankroll += totalBet;
+                //                    $currentBet.html("$" + totalBet);
+                //                    $bankrollDisplay.html("$" + bankroll);
+                //                    nextRound();
+                //                } else if (dealerTotal > 21) {
+                //                    $("#dealer-actions #hit").addClass("disabled");
+                //                    $("#dealer-actions #stay").addClass("disabled");
+                //                    $("#dealer-actions #hit").off("click");
+                //                    $("#dealer-actions #stay").off("click");
+                //                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> YOU BUSTED!");
+                //                    totalBet -= totalBet;
+                //                    bankroll += totalBet;
+                //                    $currentBet.html("$" + totalBet);
+                //                    $bankrollDisplay.html("$" + bankroll);
+                //                    nextRound();
+                //                }
+            });
+
+
+            //Adds Click Event To #stay
+            $("#dealer-actions #stay").on("click", function () {
+                dCardCount++;
+                if (dealerTotal < 16) {
+                    stackAddCard(stackDeal(), dealer);
+                    console.log("Dealer Card " + dCardCount + ": " + dealer[dCardCount].toString());
+                    var dCardHit = $('<div id="d-card-' + cardCount + '" class="card">');
+                    dCardHit.css('background-image', 'url(' + '"' + dealer[dCardCount].image + '"' + ')');
+                    dCardHit.appendTo('#dealer-area');
+                    dealerTotal += dealer[dCardCount].value;
+                }
+            });
             break;
     }
 }
 
+function nextRound() {
+    console.log("Next Round");
+
+    $("#dealer-actions #deal").removeClass("disabled");
+    $("#dealer-actions #deal").addClass("active");
+    $("#dealer-actions #deal").on("click", function () {
+        $(".card").remove(".card");
+        playerTotal = 0;
+        dealerTotal = 0;
+        dealRoundCounter = 1;
+        $("#dealer-actions li button").addClass("disabled");
+        $("#dealer-actions #deal").removeClass("active");
+        $("#dealer-actions #deal").off("click");
+        $(".bet").off("click");
+        setStatus("dealCards");
+    });
+}
+
 
 function dealRound() {
-
     // Deal a card to the player or the dealer based on the counter.
     while (dealRoundCounter < 5) {
         switch (dealRoundCounter) {
             case 1:
                 stackAddCard(stackDeal(), player);
-                var pCard1 = $('<img id="p-card-1" class="card">');
-                pCard1.attr('src', player[0].image);
-                pCard1.appendTo('#player-area');
+                console.log("Player Card 0: " + player[0].toString());
+                var pCard0 = $('<div id="p-card-0" class="card">');
+                pCard0.css('background-image', 'url(' + '"' + player[0].image + '"' + ')');
+                pCard0.appendTo('#player-area');
+                playerTotal += player[0].value;
                 break;
             case 2:
                 stackAddCard(stackDeal(), dealer);
-                var dCard1 = $('<img id="d-card-1" class="card">');
-                dCard1.attr('src', dealer[0].image);
-                dCard1.appendTo('#dealer-area');
+                console.log("Dealer Card 0: " + dealer[0].toString());
+                var dCard0 = $('<div id="d-card-0" class="card">');
+                dCard0.css('background-image', 'url(' + '"' + faceDownUrl + '"' + ')');
+                dCard0.appendTo('#dealer-area');
+                dealerTotal += dealer[0].value;
                 break;
             case 3:
                 stackAddCard(stackDeal(), player);
-                var pCard2 = $('<img id="p-card-2" class="card">');
-                pCard2.attr('src', player[1].image);
-                pCard2.appendTo('#player-area');
+                console.log("Player Card 1: " + player[1].toString());
+                var pCard1 = $('<div id="p-card-1" class="card">');
+                pCard1.css('background-image', 'url(' + '"' + player[1].image + '"' + ')');
+                pCard1.appendTo('#player-area');
+                playerTotal += player[1].value;
                 break;
-
             case 4:
                 stackAddCard(stackDeal(), dealer);
-                var dCard2 = $('<img id="d-card-2" class="card">');
-                dCard2.attr('src', dealer[1].image);
-                dCard2.appendTo('#dealer-area');
+                console.log("Dealer Card 1: " + dealer[1].toString());
+                var dCard1 = $('<div id="d-card-1" class="card">');
+                dCard1.css('background-image', 'url(' + '"' + dealer[1].image + '"' + ')');
+                dCard1.appendTo('#dealer-area');
+                dealerTotal += dealer[1].value;
                 break;
 
-                //        default:
-
-                // No more cards to deal, play the round.
-
-                //            playRound();
-                //            return;
-                //            break;
+            default:
+                console.log("No more cards to deal, play the round.")
+                playRound();
+                return;
+                break;
         }
-
-        // Update the player's score.
-
-        //        if (player[0].getScore() == 21) {
-        ////            player[0].blackjack = true;
-        //            player[0].scoreTextNode.nodeValue = "Blackjack";
-        //        } else
-        //            player[0].scoreTextNode.nodeValue = player[0].getScore();
-
         // Set a timer for the next call.
-
         dealRoundCounter++;
-        setTimeout(dealRound, dealTimeDelay);
-
-
+        setTimeout(dealRound(), dealTimeDelay);
     }
 }
-
-
-
-//function dealRound() {
-//    // Deal a card to the player or the dealer based on the counter.
-//    switch (dealRoundCounter) {
-//        case 1:
-//            player[0].stackAddCard(getNextCard(), false);
-//            break;
-//        case 2:
-//            dealer.stackAddCard(getNextCard(), true);
-//            break;
-//        case 3:
-//            player[0].stackAddCard(getNextCard(), false);
-//            break;
-//        case 4:
-//            dealer.stackAddCard(getNextCard(), false);
-//            break;
-//            //default:
-//            // No more cards to deal, play the round.
-//            //playRound();
-//            //return;
-//            //break;
-//    }
-//
-//    // Update the player's score.
-//    //    if (player[0].getScore() == 21) {
-//    //        player[0].blackjack = true;
-//    //        player[0].scoreTextNode.nodeValue = "Blackjack";
-//    //    }
-//    //    else
-//    //        player[0].scoreTextNode.nodeValue = player[0].getScore();
-//    //
-//    //    // Set a timer for the next call.
-//    //
-//    dealRoundCounter++;
-//    setTimeout(dealRound, dealTimeDelay);
-//}
 
 function startModal() {
     $('#start-modal').foundation('reveal', 'open');
@@ -164,7 +224,9 @@ function startModal() {
 function placeBets() {
     var counter = 0;
     $commonDisplay.html("Place your bets<br/>and click deal!");
+    $("#bet-selector").addClass("active");
     $(".bet").on("click", function () {
+        $("#bet-selector").removeClass("active");
         var amount = $(this).val();
         if (bankroll >= amount) {
             totalBet += amount;
@@ -179,7 +241,7 @@ function placeBets() {
                 counter += 1;
             }
         } else {
-            alert("You do not have enough money!");
+            $commonDisplay.html("You do not have enough money!");
         }
     });
 }
@@ -188,11 +250,12 @@ function placeBets() {
 // Card constructor function.
 //-----------------------------------------------------------------------------
 
-function Card(rank, suit, image) {
+function Card(rank, suit, image, value) {
 
     this.rank = rank;
     this.suit = suit;
     this.image = image;
+    this.value = value;
 
     this.toString = cardToString;
     //this.createNode = cardCreateNode;
@@ -276,176 +339,6 @@ function cardToString() {
     return rank + " of " + suit;
 }
 
-//-----------------------------------------------------------------------------
-// cardCreateNode(): Returns a DIV node which can be used to display the card 
-// on a page.
-//-----------------------------------------------------------------------------
-
-//var cardImg0 = new Image();
-//cardImg0.src = "img/cards/c01.png";
-//var cardImg1 = new Image();
-//cardImg1.src = "img/cards/c01.png";
-//var cardImg2 = new Image();
-//cardImg2.src = "img/cards/c01.png";
-//var cardImg3 = new Image();
-//cardImg3.src = "img/cards/c01.png";
-
-//function cardCreateNode() {
-//
-//    var cardNode, frontNode, indexNode, spotNode, tempNode, textNode;
-//    var indexStr, spotChar;
-//
-//    // This is the main node, a DIV tag.
-//
-//    cardNode = document.createElement("DIV");
-//    cardNode.className = "card";
-//
-//    // Build the front of card.
-//
-//    frontNode = document.createElement("DIV");
-//    frontNode.className = "front";
-//
-//    // Get proper character for card suit and change font color if necessary.
-//
-//    spotChar = "\u00a0";
-//    switch (this.suit) {
-//        case "C":
-//            spotChar = "\u2663";
-//            break;
-//        case "D":
-//            frontNode.className += " red";
-//            spotChar = "\u2666";
-//            break;
-//        case "H":
-//            frontNode.className += " red";
-//            spotChar = "\u2665";
-//            break;
-//        case "S":
-//            spotChar = "\u2660";
-//            break;
-//    }
-//
-//    // Create and add the index (rank) to the upper-left corner of the card.
-//
-//    indexStr = this.rank;
-//    if (this.toString() == "")
-//        indexStr = "\u00a0";
-//    spotNode = document.createElement("DIV");
-//    spotNode.className = "index";
-//    textNode = document.createTextNode(indexStr);
-//    spotNode.appendChild(textNode);
-//    spotNode.appendChild(document.createElement("BR"));
-//    textNode = document.createTextNode(spotChar);
-//    spotNode.appendChild(textNode);
-//    frontNode.appendChild(spotNode);
-//
-//    // Create and add spots based on card rank (Ace thru 10).
-//
-//    spotNode = document.createElement("DIV");
-//    textNode = document.createTextNode(spotChar);
-//    spotNode.appendChild(textNode);
-//    if (this.rank == "A") {
-//        spotNode.className = "ace";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "3" || this.rank == "5" || this.rank == "9") {
-//        spotNode.className = "spotB3";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "2" || this.rank == "3") {
-//        spotNode.className = "spotB1";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "2" || this.rank == "3") {
-//        spotNode.className = "spotB5";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "4" || this.rank == "5" || this.rank == "6" ||
-//        this.rank == "7" || this.rank == "8" || this.rank == "9" ||
-//        this.rank == "10") {
-//        spotNode.className = "spotA1";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotA5";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotC1";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotC5";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "6" || this.rank == "7" || this.rank == "8") {
-//        spotNode.className = "spotA3";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotC3";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "7" || this.rank == "8" || this.rank == "10") {
-//        spotNode.className = "spotB2";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "8" || this.rank == "10") {
-//        spotNode.className = "spotB4";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//    if (this.rank == "9" || this.rank == "10") {
-//        spotNode.className = "spotA2";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotA4";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotC2";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotC4";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//
-//    // For face cards (Jack, Queen or King), create and add the proper image.
-//
-//    tempNode = document.createElement("IMG");
-//    tempNode.className = "face";
-//    if (this.rank == "J")
-//        tempNode.src = "graphics/jack.gif";
-//    if (this.rank == "Q")
-//        tempNode.src = "graphics/queen.gif";
-//    if (this.rank == "K")
-//        tempNode.src = "graphics/king.gif";
-//
-//    // For face cards, add suit characters to the upper-left and lower-right
-//    // corners.
-//
-//    if (this.rank == "J" || this.rank == "Q" || this.rank == "K") {
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotA1";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//        spotNode.className = "spotC5";
-//        tempNode = spotNode.cloneNode(true);
-//        frontNode.appendChild(tempNode);
-//    }
-//
-//    // Add front node to the card node.
-//
-//    cardNode.appendChild(frontNode);
-//
-//    // Return the card node.
-//
-//    return cardNode;
-//}
-
 //=============================================================================
 // Stack Object
 //=============================================================================
@@ -478,6 +371,7 @@ function stackMakeDeck(n) {
     var ranks = new Array("A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K");
     var suits = new Array("C", "D", "H", "S");
     var imgUrls = ["img/cards/c01.png", "img/cards/c02.png", "img/cards/c03.png", "img/cards/c04.png", "img/cards/c05.png", "img/cards/c06.png", "img/cards/c07.png", "img/cards/c08.png", "img/cards/c09.png", "img/cards/c10.png", "img/cards/c11.png", "img/cards/c12.png", "img/cards/c13.png", "img/cards/d01.png", "img/cards/d02.png", "img/cards/d03.png", "img/cards/d04.png", "img/cards/d05.png", "img/cards/d06.png", "img/cards/d07.png", "img/cards/d08.png", "img/cards/d09.png", "img/cards/d10.png", "img/cards/d11.png", "img/cards/d12.png", "img/cards/d13.png", "img/cards/h01.png", "img/cards/h02.png", "img/cards/h03.png", "img/cards/h04.png", "img/cards/h05.png", "img/cards/h06.png", "img/cards/h07.png", "img/cards/h08.png", "img/cards/h09.png", "img/cards/h10.png", "img/cards/h11.png", "img/cards/h12.png", "img/cards/h13.png", "img/cards/s01.png", "img/cards/s02.png", "img/cards/s03.png", "img/cards/s04.png", "img/cards/s05.png", "img/cards/s06.png", "img/cards/s07.png", "img/cards/s08.png", "img/cards/s09.png", "img/cards/s10.png", "img/cards/s11.png", "img/cards/s12.png", "img/cards/s13.png"];
+    var values = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
     var i, j, k;
     var m;
     m = ranks.length * suits.length;
@@ -488,11 +382,13 @@ function stackMakeDeck(n) {
 
     // Fill the array with 'n' packs of cards.
 
-    for (i = 0; i < n; i++)
-        for (j = 0; j < suits.length; j++)
-            for (k = 0; k < ranks.length; k++)
-
-    this.cards[i * m + j * ranks.length + k] = new Card(ranks[k], suits[j], imgUrls[j * ranks.length + k]);
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < suits.length; j++) {
+            for (k = 0; k < ranks.length; k++) {
+                this.cards[i * m + j * ranks.length + k] = new Card(ranks[k], suits[j], imgUrls[j * ranks.length + k], values[k]);
+            }
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -558,6 +454,7 @@ function stackAddCard(card, array) {
 // stackCombine(stack): Adds the cards in the given stack to the current one.
 // The given stack is emptied.
 //-----------------------------------------------------------------------------
+
 
 function stackCombine(stack) {
 
