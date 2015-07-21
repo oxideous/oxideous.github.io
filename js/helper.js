@@ -15,7 +15,9 @@ var bankroll = 1000,
     player = [],
     playerTotal = 0,
     dealer = [],
-    dealerTotal = 0;
+    dealerTotal = 0,
+    dealerWins = "dealerWins",
+    playerWins = "playerWins";
 
 
 function setStatus(currentStatus) {
@@ -117,7 +119,7 @@ function setStatus(currentStatus) {
                         $("#dealer-actions #hit").off("click");
                         $("#dealer-actions #stay").removeClass("active");
                         $("#dealer-actions #stay").off("click");
-                        setTimeout(nextRound("dealerWins"), 5000);
+                        setTimeout(nextRound.bind(this,dealerWins), 5000);
                     }
                 }
             });
@@ -153,18 +155,18 @@ function setStatus(currentStatus) {
                             $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> Converted Aces from 11's to 1's!");
                         }
                         $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer busted! You Win!");
-                        setTimeout(nextRound("playerWins"), 5000);
+                        setTimeout(nextRound.bind(this, playerWins), 5000);
                     }
                 } else if (dealerTotal === 21) {
                     $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer has 21!");
-                    setTimeout(nextRound("dealerWins"), 5000);
+                    setTimeout(nextRound.bind(this, dealerWins), 5000);
                 } else if (dealerTotal >= 17) {
                     $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer stays! You lose!");
                     if (dealerTotal < playerTotal <= 21) {
                         $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer stays! You win!");
-                        setTimeout(nextRound("playerWins"),5000);
+                        setTimeout(nextRound.bind(this, playerWins), 5000);
                     }
-                    setTimeout(nextRound("dealerWins"), 5000);
+                    setTimeout(nextRound.bind(this, dealerWins), 5000);
                 } else if (dealerTotal <= 16) {
                     $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer is going to hit!");
                 }
