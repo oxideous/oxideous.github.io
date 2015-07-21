@@ -22,31 +22,36 @@ function setStatus(currentStatus) {
     console.log(currentStatus);
     switch (currentStatus) {
         case "roundInit":
+            //Shuffles Cards
             stackShuffle(cards.length);
+
+            //Disables Action bar
             $("#dealer-actions li button").addClass("disabled");
+
+            //Initiates Place Bets
             placeBets();
+
             break;
+
         case "roundStart":
+
+            //Makes Deal Buttons Active
             $("#dealer-actions #deal").removeClass("disabled");
             $("#dealer-actions #deal").addClass("active");
 
+            //Creates click #deal Click Event
             $("#dealer-actions #deal").on("click", function () {
                 $("#dealer-actions li button").addClass("disabled");
                 $("#dealer-actions #deal").removeClass("active");
                 $("#dealer-actions #deal").off("click");
                 $(".bet").off("click");
+                player = [];
+                dealer = [];
                 setStatus("dealCards");
             });
             break;
 
         case "dealCards":
-
-            //Clears Player & Dealer Array
-            if (player.length > 0 && dealer.length > 0) {
-                player = [];
-                dealer = [];
-            }
-
             //Initiates dealRound Switch
             dealRoundCounter = 1;
             dealRound();
@@ -54,11 +59,13 @@ function setStatus(currentStatus) {
             //Displays Current Score
             if (playerTotal === 21) {
                 $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You have blackjack!");
-            } else if (playerTotal < 16) {
+            } else if (dealerTotal === 21) {
+                $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer has blackjack!");
+            } else if (playerTotal <= 16) {
                 $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You should hit!");
                 $("#dealer-actions #hit").addClass("active");
                 $("#dealer-actions #stay").addClass("active");
-            } else if (playerTotal > 17) {
+            } else if (playerTotal >= 17) {
                 $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You should stay!");
                 $("#dealer-actions #hit").addClass("active");
                 $("#dealer-actions #stay").addClass("active");
@@ -69,145 +76,104 @@ function setStatus(currentStatus) {
             $("#dealer-actions #stay").removeClass("disabled");
 
             //Sets variable with current length of Player/Dealer Array
-            var pCardCount = player.length - 1;
-            var dCardCount = dealer.length - 1;
+            pCardCount = player.length - 1;
+            dCardCount = dealer.length - 1;
 
             //Adds Click Event To #hit
             $("#dealer-actions #hit").on("click", function () {
                 pCardCount++;
                 stackAddCard(stackDeal(), player);
                 console.log("Player Card " + pCardCount + ": " + player[pCardCount].toString());
-                var pCardHit = $('<div id="p-card-' + pCardCount + '" class="card">');
+                pCardHit = $('<div id="p-card-' + pCardCount + '" class="card">');
                 pCardHit.css('background-image', 'url(' + '"' + player[pCardCount].image + '"' + ')');
                 pCardHit.appendTo('#player-area');
                 playerTotal += player[pCardCount].value;
-                $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal);
+                if (playerTotal <= 16) {
+                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You should hit!");
+                    $("#dealer-actions #hit").addClass("active");
+                    $("#dealer-actions #stay").addClass("active");
+                } else if (playerTotal >= 17) {
+                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />You should stay!");
+                    $("#dealer-actions #hit").addClass("active");
+                    $("#dealer-actions #stay").addClass("active");
+                }
 
                 //Check if playerTotal is over 21.  If it is search for aces by their value.
                 if (playerTotal > 21) {
-                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> YOU BUSTED!");
                     console.log("You're over 21!  Searching for Aces!");
                     for (var i = 0; i < player.length; i++) {
                         if (player[i].value === 11) {
                             console.log("Converting Aces!");
                             player[i].value = 1;
                             playerTotal -= 10;
-                            $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> CONVERTED ACES!");
-                        } 
+                            $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> Converted Aces from 11's to 1's!");
+                        }
+                    }
+                    if (playerTotal > 21) {
+                        $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> You busted!");
+                        $("#d-card-0").css('background-image', 'url(' + '"' + dealer[0].image + '"' + ')');
+                        $("#dealer-actions li button").addClass("disabled");
+                        $("#dealer-actions #hit").removeClass("active");
+                        $("#dealer-actions #hit").off("click");
+                        $("#dealer-actions #stay").removeClass("active");
+                        $("#dealer-actions #stay").off("click");
+                        setTimeout(nextRound("dealerWins"), 5000);
                     }
                 }
-
-                //                if (playerTotal > 21 && dealerTotal > 21) {
-                //                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> ROUND IS A TIE.");
-                //                } else if (playerTotal > 21) {
-                //                    $("#dealer-actions #hit").addClass("disabled");
-                //                    $("#dealer-actions #stay").addClass("disabled");
-                //                    $("#dealer-actions #hit").off("click");
-                //                    $("#dealer-actions #stay").off("click");
-                //                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> YOU BUSTED!");
-                //                    totalBet -= totalBet;
-                //                    bankroll += totalBet;
-                //                    $currentBet.html("$" + totalBet);
-                //                    $bankrollDisplay.html("$" + bankroll);
-                //                    nextRound();
-                //                } else if (dealerTotal > 21) {
-                //                    $("#dealer-actions #hit").addClass("disabled");
-                //                    $("#dealer-actions #stay").addClass("disabled");
-                //                    $("#dealer-actions #hit").off("click");
-                //                    $("#dealer-actions #stay").off("click");
-                //                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> YOU BUSTED!");
-                //                    totalBet -= totalBet;
-                //                    bankroll += totalBet;
-                //                    $currentBet.html("$" + totalBet);
-                //                    $bankrollDisplay.html("$" + bankroll);
-                //                    nextRound();
-                //                }
             });
 
 
             //Adds Click Event To #stay
             $("#dealer-actions #stay").on("click", function () {
-                dCardCount++;
-                if (dealerTotal < 16) {
+                $("#dealer-actions li button").addClass("disabled");
+                $("#dealer-actions #hit").removeClass("active");
+                $("#dealer-actions #hit").off("click");
+                $("#dealer-actions #stay").removeClass("active");
+                $("#dealer-actions #stay").off("click");
+                $("#d-card-0").css('background-image', 'url(' + '"' + dealer[0].image + '"' + ')');
+                if (dealerTotal >= 16) {
+
+                }
+                while (dealerTotal <= 16) {
+                    dCardCount++;
                     stackAddCard(stackDeal(), dealer);
                     console.log("Dealer Card " + dCardCount + ": " + dealer[dCardCount].toString());
-                    var dCardHit = $('<div id="d-card-' + cardCount + '" class="card">');
+                    var dCardHit = $('<div id="d-card-' + dCardCount + '" class="card">');
                     dCardHit.css('background-image', 'url(' + '"' + dealer[dCardCount].image + '"' + ')');
                     dCardHit.appendTo('#dealer-area');
                     dealerTotal += dealer[dCardCount].value;
+                }
+                if (dealerTotal > 21) {
+                    console.log("You're over 21!  Searching for Aces!");
+                    for (var i = 0; i < dealer.length; i++) {
+                        if (dealer[i].value === 11) {
+                            console.log("Converting Aces!");
+                            dealer[i].value = 1;
+                            dealerTotal -= 10;
+                            $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br/> Converted Aces from 11's to 1's!");
+                        }
+                        $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer busted! You Win!");
+                        setTimeout(nextRound("playerWins"), 5000);
+                    }
+                } else if (dealerTotal === 21) {
+                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer has 21!");
+                    setTimeout(nextRound("dealerWins"), 5000);
+                } else if (dealerTotal >= 17) {
+                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer stays! You lose!");
+                    if (dealerTotal < playerTotal <= 21) {
+                        $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer stays! You win!");
+                        setTimeout(nextRound("playerWins"),5000);
+                    }
+                    setTimeout(nextRound("dealerWins"), 5000);
+                } else if (dealerTotal <= 16) {
+                    $commonDisplay.html("Dealer Score: " + dealerTotal + "<br />Player Score: " + playerTotal + "<br />Dealer is going to hit!");
                 }
             });
             break;
     }
 }
 
-function nextRound() {
-    console.log("Next Round");
 
-    $("#dealer-actions #deal").removeClass("disabled");
-    $("#dealer-actions #deal").addClass("active");
-    $("#dealer-actions #deal").on("click", function () {
-        $(".card").remove(".card");
-        playerTotal = 0;
-        dealerTotal = 0;
-        dealRoundCounter = 1;
-        $("#dealer-actions li button").addClass("disabled");
-        $("#dealer-actions #deal").removeClass("active");
-        $("#dealer-actions #deal").off("click");
-        $(".bet").off("click");
-        setStatus("dealCards");
-    });
-}
-
-
-function dealRound() {
-    // Deal a card to the player or the dealer based on the counter.
-    while (dealRoundCounter < 5) {
-        switch (dealRoundCounter) {
-            case 1:
-                stackAddCard(stackDeal(), player);
-                console.log("Player Card 0: " + player[0].toString());
-                var pCard0 = $('<div id="p-card-0" class="card">');
-                pCard0.css('background-image', 'url(' + '"' + player[0].image + '"' + ')');
-                pCard0.appendTo('#player-area');
-                playerTotal += player[0].value;
-                break;
-            case 2:
-                stackAddCard(stackDeal(), dealer);
-                console.log("Dealer Card 0: " + dealer[0].toString());
-                var dCard0 = $('<div id="d-card-0" class="card">');
-                dCard0.css('background-image', 'url(' + '"' + faceDownUrl + '"' + ')');
-                dCard0.appendTo('#dealer-area');
-                dealerTotal += dealer[0].value;
-                break;
-            case 3:
-                stackAddCard(stackDeal(), player);
-                console.log("Player Card 1: " + player[1].toString());
-                var pCard1 = $('<div id="p-card-1" class="card">');
-                pCard1.css('background-image', 'url(' + '"' + player[1].image + '"' + ')');
-                pCard1.appendTo('#player-area');
-                playerTotal += player[1].value;
-                break;
-            case 4:
-                stackAddCard(stackDeal(), dealer);
-                console.log("Dealer Card 1: " + dealer[1].toString());
-                var dCard1 = $('<div id="d-card-1" class="card">');
-                dCard1.css('background-image', 'url(' + '"' + dealer[1].image + '"' + ')');
-                dCard1.appendTo('#dealer-area');
-                dealerTotal += dealer[1].value;
-                break;
-
-            default:
-                console.log("No more cards to deal, play the round.")
-                playRound();
-                return;
-                break;
-        }
-        // Set a timer for the next call.
-        dealRoundCounter++;
-        setTimeout(dealRound(), dealTimeDelay);
-    }
-}
 
 function startModal() {
     $('#start-modal').foundation('reveal', 'open');
@@ -222,7 +188,7 @@ function startModal() {
 }
 
 function placeBets() {
-    var counter = 0;
+    counter = 0;
     $commonDisplay.html("Place your bets<br/>and click deal!");
     $("#bet-selector").addClass("active");
     $(".bet").on("click", function () {
@@ -233,7 +199,6 @@ function placeBets() {
             bankroll -= amount;
             $currentBet.html("$" + totalBet);
             $bankrollDisplay.html("$" + bankroll);
-            //return totalBet;
             if (counter === 0) {
                 setStatus("roundStart");
                 counter += 1;
@@ -246,6 +211,99 @@ function placeBets() {
     });
 }
 
+function dealRound() {
+    // Deal a card to the player or the dealer based on the counter.
+    while (dealRoundCounter < 5) {
+        switch (dealRoundCounter) {
+            case 1:
+                stackAddCard(stackDeal(), player);
+                console.log("Player Card 0: " + player[0].toString());
+                pCard0 = $('<div id="p-card-0" class="card">');
+                pCard0.css('background-image', 'url(' + '"' + player[0].image + '"' + ')');
+                pCard0.appendTo('#player-area');
+                playerTotal += player[0].value;
+                break;
+            case 2:
+                stackAddCard(stackDeal(), dealer);
+                console.log("Dealer Card 0: " + dealer[0].toString());
+                dCard0 = $('<div id="d-card-0" class="card">');
+                dCard0.css('background-image', 'url(' + '"' + faceDownUrl + '"' + ')');
+                dCard0.appendTo('#dealer-area');
+                dealerTotal += dealer[0].value;
+                break;
+            case 3:
+                stackAddCard(stackDeal(), player);
+                console.log("Player Card 1: " + player[1].toString());
+                pCard1 = $('<div id="p-card-1" class="card">');
+                pCard1.css('background-image', 'url(' + '"' + player[1].image + '"' + ')');
+                pCard1.appendTo('#player-area');
+                playerTotal += player[1].value;
+                break;
+            case 4:
+                stackAddCard(stackDeal(), dealer);
+                console.log("Dealer Card 1: " + dealer[1].toString());
+                dCard1 = $('<div id="d-card-1" class="card">');
+                dCard1.css('background-image', 'url(' + '"' + dealer[1].image + '"' + ')');
+                dCard1.appendTo('#dealer-area');
+                dealerTotal += dealer[1].value;
+                break;
+            case null:
+                console.log("Out of Cards!!!!!!")
+                break;
+                //            default:
+                //                console.log("No more cards to deal, play the round.")
+                //                playRound();
+                //                return;
+                //                break;
+        }
+        // Set a timer for the next call.
+        dealRoundCounter++;
+        setTimeout(dealRound(), dealTimeDelay);
+    }
+}
+
+function nextRound(roundWinner) {
+    console.log("Next Round");
+    console.log(roundWinner);
+
+//    $("#dealer-actions #deal").removeClass("disabled");
+//    $("#dealer-actions #deal").addClass("active");
+
+    switch (roundWinner) {
+        case "playerWins":
+            bankroll += (totalBet * 2);
+            totalBet = 0;
+            $currentBet.html("$" + totalBet);
+            $bankrollDisplay.html("$" + bankroll);
+            console.log("Player Wins!");
+            break;
+            
+        case "dealerWins":
+            totalBet = 0;
+            $currentBet.html("$" + totalBet);
+            console.log("Dealer Wins!");
+            break;
+    }
+    placeBets();
+    var newGameCounter = 0;
+    $("#dealer-actions #deal").on("click", function () {
+        $(".card").remove(".card");
+        playerTotal = 0;
+        dealerTotal = 0;
+        dealRoundCounter = 1;
+        $("#dealer-actions li button").addClass("disabled");
+        $("#dealer-actions #deal").removeClass("active");
+        $("#dealer-actions #deal").off("click");
+        $(".bet").off("click");
+        if (newGameCounter === 0){
+            setStatus("roundStart");
+            newGameCounter++
+        }
+        
+    });
+}
+
+///http://www.brainjar.com/
 //-----------------------------------------------------------------------------
 // Card constructor function.
 //-----------------------------------------------------------------------------
@@ -258,7 +316,6 @@ function Card(rank, suit, image, value) {
     this.value = value;
 
     this.toString = cardToString;
-    //this.createNode = cardCreateNode;
 }
 
 //-----------------------------------------------------------------------------

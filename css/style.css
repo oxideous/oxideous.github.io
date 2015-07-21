@@ -1,9 +1,11 @@
 /*Foundation Overides*/
 
+/*
 .column,
 .columns {
     min-height: 1px;
 }
+*/
 
 /*Main Styles*/
 
@@ -53,16 +55,16 @@ h6 {
     margin-bottom: 0;
 }
 #player-area {
-    margin-top: 15px;
-    min-height: 218px;
+
+    min-height: 240px;
     text-align: center;
 }
 #dealer-row{
     
 }
 #dealer-area {
-    margin-top: 15px;
-    min-height: 218px;
+
+    min-height: 240px;
     text-align: center;
 }
 #player-area h2,
@@ -73,11 +75,16 @@ h6 {
     left: 15px;
     z-index: -1;
 }
+#common-row{
+    margin: 15px auto 15px auto;
+}
 #common-area {
     min-height: 100px;
     text-align: center;
     padding-top: 15px;
     padding-bottom: 15px;
+}
+#bet-row{
 }
 #bet-section {
     background: rgba(0, 0, 0, .25);
@@ -96,8 +103,7 @@ h6 {
 }
 #bet-selector {
     text-align: center;
-    text-align: left;
-    font-size: 14px;
+    padding-top:15px;
 }
 #bet-selector li {
     margin-left: 0;
@@ -107,7 +113,14 @@ h6 {
     cursor: pointer;
 }
 #bankroll-display {
+    padding-top:15px;
     text-align: right;
+}
+#dealer-actions {
+    margin-top:15px;
+}
+#current-bet {
+    padding-top:15px;
 }
 #main-footer {
     background: rgba(0, 0, 0, .50);
@@ -116,7 +129,6 @@ h6 {
 }
 .leveltwo {
     background: rgba(0, 0, 0, .25);
-    margin-bottom: 15px;
     border-radius: 4px;
     -webkit-box-shadow: inset 10px 10px 50px -15px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: inset 10px 10px 50px -15px rgba(0, 0, 0, 0.75);
@@ -127,7 +139,7 @@ h6 {
 .card {
     width: 140px;
     height: 203px;
-    margin: 0 15px 15px 0;
+    margin: 15px;
     background-size: cover;
     display: inline-block;
     
